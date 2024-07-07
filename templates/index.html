@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+
+        
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            transition: 0.4s ease;
+        }
+
+        .navbar {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .grid-container {
+            column-count: 5;
+            column-gap: 0;
+            margin-top: 30px;
+        }
+
+        @media screen and (max-width:400px){
+            .grid-container {
+            column-count: 1;
+            column-gap: 0;
+            margin-top: 30px;
+        }
+        }
+
+        .grid-item {
+            margin: 5px;
+            break-inside: avoid;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            padding: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: #007bff;
+        }
+
+        .delete-button:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        .fullscreen-img {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow: hidden;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .fullscreen-img img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: scale(0.5);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .fullscreen-img.show img {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .fullscreen-img.hide img {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #007bff;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .close-button:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        .nav-buttons-container {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            z-index: 1100;
+        }
+
+        .nav-button {
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #007bff;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        #prevButton {
+            margin-left: 20px;
+        }
+
+        #nextButton {
+            margin-right: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        .dark-mode{
+           background-color:#121212 !important;
+           color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#"><i class="fas fa-anchor"></i> Captain's Gallery</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="../upload"><i class="fas fa-upload"></i> Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="grid-container">
+            {% for decrypted_images, images in image_info_pairs %}
+            <div class="grid-item">
+                <a class="delete-button" href="../deleteImage/{{ images.id }}"><i class="fas fa-trash"></i></a>
+                <img src="data:image/png;base64,{{ decrypted_images }}" class="img-fluid">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="fullscreen-img" id="fullscreenImg">
+        <button class="close-button" id="closeButton">&times;</button>
+        <div class="nav-buttons-container">
+            <button class="nav-button" id="prevButton"><i class="fas fa-arrow-left"></i></button>
+            <button class="nav-button" style="position: absolute;right: 1px;" id="nextButton"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <img src="" id="fullscreenImage">
+    </div>
+
+    <!-- Dark Mode Toggle Button -->
+    <button onclick="toggleDarkMode()" class="btn btn-primary mt-3 ml-3" style="position: fixed;bottom: 30px;"><i class="fas fa-moon"></i> Toggle Dark Mode</button>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+
+
+<!-- JavaScript function for full screen image -->
+<script>
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.grid-item img');
+    const totalImages = images.length;
+
+
+    
+    // Function to show fullscreen image
+    function showFullscreenImage(index) {
+        const fullscreenImg = document.getElementById('fullscreenImg');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        fullscreenImage.src = images[index].src;
+        fullscreenImg.style.display = 'flex';
+        setTimeout(() => {
+            fullscreenImg.classList.add('show');
+            // Initialize Panzoom
+            const panzoomInstance = svgPanZoom(fullscreenImage, {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true,
+                maxZoom: 2 // You can adjust the max zoom level as needed
+            });
+        }, 10);
+        currentIndex = index;
+    }
+
+    // Function to close fullscreen image
+    function closeFullscreenImage() {
+        const fullscreenImg = document.getElementById('fullscreenImg');
+        fullscreenImg.classList.remove('show');
+        fullscreenImg.classList.add('hide');
+        setTimeout(() => {
+            fullscreenImg.style.display = 'none';
+            fullscreenImg.classList.remove('hide');
+        }, 500);
+    }
+
+    // Event listeners for clicking on images
+    images.forEach((img, index) => {
+        img.addEventListener('click', function () {
+            showFullscreenImage(index);
+        });
+    });
+
+    // Event listener for closing fullscreen image
+    document.getElementById('closeButton').addEventListener('click', function () {
+        closeFullscreenImage();
+    });
+
+    // Event listener for next button
+    document.getElementById('nextButton').addEventListener('click', function () {
+        if (currentIndex < totalImages - 1) {
+            showFullscreenImage(currentIndex + 1);
+        }
+    });
+
+    // Event listener for previous button
+    document.getElementById('prevButton').addEventListener('click', function () {
+        if (currentIndex > 0) {
+            showFullscreenImage(currentIndex - 1);
+        }
+    });
+
+    // Inside showFullscreenImage function
+
+    // Function to toggle dark mode
+// Function to toggle dark mode
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Save the user's dark mode preference to localStorage
+    const isDarkMode = body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+}
+
+// Check if the user has a preference for dark mode
+const prefersDarkMode = localStorage.getItem('darkMode') === 'true';
+if (prefersDarkMode) {
+    document.body.classList.add('dark-mode');
+}
+
+</script>
+
+</body>
+</html>

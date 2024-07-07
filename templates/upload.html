@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        form {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            border: 2px solid #4285f4;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .drag-drop-area {
+            margin: 20px auto;
+            width: 100%;
+            padding: 20px;
+            border: 2px dashed #4285f4;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #4285f4;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+        .drag-drop-area.drag-over {
+            background-color: rgba(66, 133, 244, 0.1);
+            border-color: #4285f4;
+        }
+        .drag-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #4285f4;
+        }
+        .preview {
+            margin: 20px auto;
+            width: 100%;
+            height: 200px;
+            border: 2px solid #4285f4;
+            border-radius: 5px;
+            object-fit: contain;
+            transition: border-color 0.3s;
+        }
+        input[type="submit"] {
+            background-color: #4285f4;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            outline: none;
+        }
+        input[type="submit"]:hover {
+            background-color: #2a5eba;
+        }
+        .upload-success {
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #4285f4;">File Upload</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput">
+        <label for="fileInput" class="drag-drop-area">
+            
+        
+            <span>Drag and drop a file here or click to upload</span>
+        </label>
+        <div class="preview"></div>
+        <input type="submit" value="Upload" onclick="showSuccess()">
+    </form>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dragDropArea = document.querySelector('.drag-drop-area');
+        const preview = document.querySelector('.preview');
+
+        function showSuccess() {
+            document.querySelector('form').classList.add('upload-success');
+        }
+
+        dragDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.add('drag-over');
+        });
+
+        dragDropArea.addEventListener('dragleave', () => {
+            dragDropArea.classList.remove('drag-over');
+        });
+
+        dragDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.remove('drag-over');
+            fileInput.files = e.dataTransfer.files;
+            previewFile();
+        });
+
+        fileInput.addEventListener('change', () => {
+            previewFile();
+        });
+
+        function previewFile() {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const imageData = reader.result;
+                preview.innerHTML = `<img src="${imageData}" alt="Preview">`;
+            };
+        }
+    </script>
+</body>
+</html>
